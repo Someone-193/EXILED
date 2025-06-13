@@ -226,7 +226,7 @@ namespace Exiled.API.Features.Core.UserSettings
         /// </summary>
         public static void SendToAll()
         {
-            foreach (Player player in Player.List)
+            foreach (Player player in Player.List.Where(p => p.ReferenceHub.Mode != 0))
             {
                 SendToPlayer(player);
             }
