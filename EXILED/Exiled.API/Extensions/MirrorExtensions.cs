@@ -508,23 +508,58 @@ namespace Exiled.API.Extensions
         /// <param name="value">Value of send to target.</param>
         public static void SendFakeSyncVar<T>(this Player target, NetworkIdentity behaviorOwner, Type targetType, string propertyName, T value)
         {
-            if (!target.IsConnected)
-                return;
+            target.SendFakeSyncVar(behaviorOwner, targetType, targetType, propertyName, value);
+        }
 
+        /// <summary>
+        /// Send fake values to client's <see cref="SyncVarAttribute"/>.
+        /// </summary>
+        /// <typeparam name="T">Target SyncVar property type.</typeparam>
+        /// <param name="target">The player who will be sent this message.</param>
+        /// <param name="behaviorOwner"><see cref="NetworkIdentity"/> of object that owns <see cref="NetworkBehaviour"/>.</param>
+        /// <param name="targetType"><see cref="NetworkBehaviour"/>'s type.</param>
+        /// <param name="baseType">The Type from which the desired property comes from.</param>
+        /// <param name="propertyName">Property name starting with Network.</param>
+        /// <param name="value">Value of send to target.</param>
+        public static void SendFakeSyncVar<T>(this Player target, NetworkIdentity behaviorOwner, Type targetType, Type baseType, string propertyName, T value)
+        {
+            SendFakeSyncVar(new[] { target }, behaviorOwner, targetType, baseType, propertyName, value);
+        }
+
+        /// <summary>
+        /// Send fake values to client's <see cref="SyncVarAttribute"/>.
+        /// </summary>
+        /// <typeparam name="T">Target SyncVar property type.</typeparam>
+        /// <param name="targets">The players who will be sent this message.</param>
+        /// <param name="behaviorOwner"><see cref="NetworkIdentity"/> of object that owns <see cref="NetworkBehaviour"/>.</param>
+        /// <param name="targetType"><see cref="NetworkBehaviour"/>'s type.</param>
+        /// <param name="baseType">The Type from which the desired property comes from.</param>
+        /// <param name="propertyName">Property name starting with Network.</param>
+        /// <param name="value">Value of send to target.</param>
+        public static void SendFakeSyncVar<T>(IEnumerable<Player> targets, NetworkIdentity behaviorOwner, Type targetType, Type baseType, string propertyName, T value)
+        {
             NetworkWriterPooled writer = NetworkWriterPool.Get();
             NetworkWriterPooled writer2 = NetworkWriterPool.Get();
             MakeCustomSyncWriter(behaviorOwner, targetType, null, CustomSyncVarGenerator, writer, writer2);
-            target.Connection.Send(new EntityStateMessage
+            EntityStateMessage message = new()
             {
                 netId = behaviorOwner.netId,
                 payload = writer.ToArraySegment(),
-            });
+            };
+
+            foreach (Player target in targets)
+            {
+                if (!target.IsConnected)
+                    continue;
+
+                target.Connection.Send(message);
+            }
 
             NetworkWriterPool.Return(writer);
             NetworkWriterPool.Return(writer2);
             void CustomSyncVarGenerator(NetworkWriter targetWriter)
             {
-                targetWriter.WriteULong(SyncVarDirtyBits[$"{targetType.Name}.{propertyName}"]);
+                targetWriter.WriteULong(SyncVarDirtyBits[$"{baseType.Name}.{propertyName}"]);
                 WriterExtensions[typeof(T)]?.Invoke(null, new object[2] { targetWriter, value });
             }
         }
