@@ -230,7 +230,7 @@ namespace Exiled.CustomItems.API.Features
 
             if (ClipSize > 0)
             {
-                int ammoChambered = ((AutomaticActionModule)ev.Firearm.Base.Modules.FirstOrDefault(x => x is AutomaticActionModule))?.SyncAmmoChambered ?? 0;
+                int ammoChambered = ((AutomaticActionModule?)ev.Firearm.Base.Modules.FirstOrDefault(x => x is AutomaticActionModule))?.SyncAmmoChambered ?? 0;
                 int ammoToGive = ClipSize - ammoChambered;
 
                 AmmoType ammoType = ev.Firearm.AmmoType;
@@ -242,12 +242,12 @@ namespace Exiled.CustomItems.API.Features
                 {
                     ev.Firearm.MagazineAmmo = ammoToGive;
                     int newAmmo = ev.Player.Inventory.GetCurAmmo(ammoType.GetItemType()) + ammoDrop;
-                    ev.Player.Inventory.ServerSetAmmo(ammoType.GetItemType(), newAmmo);
+                    ev.Player.SetAmmo(ammoType, (ushort)newAmmo);
                 }
                 else
                 {
                     ev.Firearm.MagazineAmmo = ammoInInventory;
-                    ev.Player.Inventory.ServerSetAmmo(ammoType.GetItemType(), 0);
+                    ev.Player.SetAmmo(ammoType, 0);
                 }
             }
 
