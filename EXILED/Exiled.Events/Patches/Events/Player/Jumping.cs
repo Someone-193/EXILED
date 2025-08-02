@@ -37,7 +37,7 @@ namespace Exiled.Events.Patches.Events.Player
             LocalBuilder jumping = generator.DeclareLocal(typeof(bool));
 
             Label cont = generator.DefineLabel();
-            Label ret = generator.DefineLabel();
+            Label cancel = generator.DefineLabel();
 
             // fun fact, the "int num = ProcessJump() ? 1 : 0;" in target method doesn't actually store anything, the bool result from ProcessJump is simply kept on stack.
             // our patch needs to know when player is jumping so we modify method to store that.
@@ -68,7 +68,7 @@ namespace Exiled.Events.Patches.Events.Player
                     new(OpCodes.Brfalse, cont),
 
                     // Player.Get(this.Hub)
-                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new(OpCodes.Ldarg_0),
                     new(OpCodes.Ldfld, Field(typeof(FpcMotor), nameof(FpcMotor.Hub))),
                     new(OpCodes.Call, Method(typeof(API.Features.Player), nameof(API.Features.Player.Get), new[] { typeof(ReferenceHub) })),
 
@@ -90,15 +90,17 @@ namespace Exiled.Events.Patches.Events.Player
                     // if (!ev.IsAllowed)
                     //    return;
                     new(OpCodes.Callvirt, PropertyGetter(typeof(JumpingEventArgs), nameof(JumpingEventArgs.IsAllowed))),
-                    new(OpCodes.Brfalse, ret),
+                    new(OpCodes.Brfalse, cancel),
 
                     // moveDir = ev.Direction
                     new(OpCodes.Ldloc, ev),
                     new(OpCodes.Callvirt, PropertyGetter(typeof(JumpingEventArgs), nameof(JumpingEventArgs.Direction))),
                     new(OpCodes.Stloc_0),
-                });
+                    new(OpCodes.Br, cont),
 
-            newInstructions[newInstructions.Count - 1].WithLabels(ret);
+                    new CodeInstruction(OpCodes.Ldc_I4_0).WithLabels(cancel),
+                    new(OpCodes.Stloc, jumping),
+                });
 
             for (int z = 0; z < newInstructions.Count; z++)
                 yield return newInstructions[z];
