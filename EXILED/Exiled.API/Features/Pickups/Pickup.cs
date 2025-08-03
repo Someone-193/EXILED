@@ -474,36 +474,46 @@ namespace Exiled.API.Features.Pickups
         /// <param name="type">The <see cref="ItemType"/> of the pickup.</param>
         /// <returns>The created <see cref="Pickup"/>.</returns>
         /// <seealso cref="Projectile.Create(Enums.ProjectileType)"/>
-        public static Pickup Create(ItemType type) => type.GetTemplate().PickupDropModel switch
+        public static Pickup Create(ItemType type)
         {
-            Scp244DeployablePickup => new Scp244Pickup(type),
-            BaseAmmoPickup => new AmmoPickup(type),
-            BaseRadioPickup => new RadioPickup(),
-            BaseMicroHIDPickup => new MicroHIDPickup(),
-            TimedGrenadePickup timeGrenade => timeGrenade.NetworkInfo.ItemId switch
+            Pickup p = type.GetTemplate().PickupDropModel switch
             {
-                ItemType.GrenadeHE => new ExplosiveGrenadePickup(),
-                ItemType.GrenadeFlash => new FlashGrenadePickup(),
-                _ => new GrenadePickup(type),
-            },
-            BaseFirearmPickup => new FirearmPickup(type),
-            BaseKeycardPickup => new KeycardPickup(type),
-            BaseBodyArmorPickup => new BodyArmorPickup(type),
-            BaseScp330Pickup => new Scp330Pickup(),
-            BaseScp1576Pickup => new Scp1576Pickup(),
-            BaseJailbirdPickup => new JailbirdPickup(),
-            ThrownProjectile thrownProjectile => thrownProjectile switch
+                Scp244DeployablePickup => new Scp244Pickup(type),
+                BaseAmmoPickup => new AmmoPickup(type),
+                BaseRadioPickup => new RadioPickup(),
+                BaseMicroHIDPickup => new MicroHIDPickup(),
+                TimedGrenadePickup timeGrenade => timeGrenade.NetworkInfo.ItemId switch
+                {
+                    ItemType.GrenadeHE => new ExplosiveGrenadePickup(),
+                    ItemType.GrenadeFlash => new FlashGrenadePickup(),
+                    _ => new GrenadePickup(type),
+                },
+                BaseFirearmPickup => new FirearmPickup(type),
+                BaseKeycardPickup => new KeycardPickup(type),
+                BaseBodyArmorPickup => new BodyArmorPickup(type),
+                BaseScp330Pickup => new Scp330Pickup(),
+                BaseScp1576Pickup => new Scp1576Pickup(),
+                BaseJailbirdPickup => new JailbirdPickup(),
+                ThrownProjectile thrownProjectile => thrownProjectile switch
+                {
+                    BaseScp018Projectile => new Projectiles.Scp018Projectile(),
+                    ExplosionGrenade explosionGrenade => new ExplosionGrenadeProjectile(type),
+                    FlashbangGrenade => new FlashbangProjectile(),
+                    BaseScp2176Projectile => new Projectiles.Scp2176Projectile(),
+                    EffectGrenade => new EffectGrenadeProjectile(type),
+                    TimeGrenade => new TimeGrenadeProjectile(type),
+                    _ => new Projectile(type),
+                },
+                _ => new Pickup(type),
+            };
+
+            if (p is FirearmPickup firearm)
             {
-                BaseScp018Projectile => new Projectiles.Scp018Projectile(),
-                ExplosionGrenade explosionGrenade => new ExplosionGrenadeProjectile(type),
-                FlashbangGrenade => new FlashbangProjectile(),
-                BaseScp2176Projectile => new Projectiles.Scp2176Projectile(),
-                EffectGrenade => new EffectGrenadeProjectile(type),
-                TimeGrenade => new TimeGrenadeProjectile(type),
-                _ => new Projectile(type),
-            },
-            _ => new Pickup(type),
-        };
+                firearm.Ammo = firearm.MaxAmmo;
+            }
+
+            return p;
+        }
 
         /// <summary>
         /// Creates and returns a new <see cref="Pickup"/> with the proper inherited subclass.

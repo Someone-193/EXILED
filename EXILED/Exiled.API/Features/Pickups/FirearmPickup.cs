@@ -157,7 +157,6 @@ namespace Exiled.API.Features.Pickups
                 return;
             }
 
-            Ammo = magazine.AmmoMax;
             MaxAmmo = magazine.AmmoMax;
         }
     }
