@@ -10,6 +10,7 @@ namespace Exiled.API.Features.Items
     using System.Collections.Generic;
     using System.Linq;
 
+    using Exiled.API.Extensions;
     using Exiled.API.Features.Core;
     using Exiled.API.Features.Pickups;
     using Exiled.API.Interfaces;
@@ -451,7 +452,7 @@ namespace Exiled.API.Features.Items
         {
             if (pickup is not null)
             {
-                Scale = pickup.Scale;
+                Scale = pickup.GameObject.GetWorldScale();
             }
         }
 

@@ -155,12 +155,12 @@ namespace Exiled.API.Features.Pickups
             {
                 if (!IsSpawned)
                 {
-                    GameObject.transform.localScale = value;
+                    GameObject.SetWorldScale(value);
                     return;
                 }
 
                 UnSpawn();
-                GameObject.transform.localScale = value;
+                GameObject.SetWorldScale(value);
                 Spawn();
             }
         }
