@@ -148,6 +148,7 @@ namespace Exiled.API.Features.Pickups
         /// <summary>
         /// Gets or sets the pickup's scale value.
         /// </summary>
+        // TODO: remove use of SetWorldScale after NW fix WaypointToy.
         public Vector3 Scale
         {
             get => GameObject.transform.localScale;

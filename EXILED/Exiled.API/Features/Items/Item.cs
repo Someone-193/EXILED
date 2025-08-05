@@ -439,6 +439,8 @@ namespace Exiled.API.Features.Items
             Base.OnAdded(null);
         }
 
+        // TODO: remove use of GetWorldScale after NW fix WaypointToy.
+
         /// <summary>
         /// Helper method for saving data between items and pickups.
         /// </summary>
