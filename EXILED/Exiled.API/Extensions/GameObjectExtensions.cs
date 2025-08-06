@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="GameObjectExtensions.cs" company="ExMod Team">
 // Copyright (c) ExMod Team. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
@@ -26,13 +26,15 @@ namespace Exiled.API.Extensions
 
             if (!parent)
             {
+                /*Features.Log.Info($"[GetWorldScale:{new StackFrame(1).GetMethod().Name}] LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{gameObject.transform.localScale}");*/
                 return gameObject.transform.localScale;
             }
 
-            gameObject.transform.SetParent(null, true);
+            gameObject.transform.SetParent(null, false);
             Vector3 value = gameObject.transform.localScale;
+            gameObject.transform.SetParent(parent, false);
 
-            gameObject.transform.SetParent(parent, true);
+            /*Features.Log.Info($"[GetWorldScale:{new StackFrame(1).GetMethod().Name}] LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");*/
             return value;
         }
 
@@ -48,13 +50,23 @@ namespace Exiled.API.Extensions
             if (!parent)
             {
                 gameObject.transform.localScale = scale;
+                /*Features.Log.Info($"[SetWorldScale] No Parent {scale}");*/
                 return;
             }
 
-            gameObject.transform.SetParent(null, true);
-            gameObject.transform.localScale = scale;
+            /*
+            gameObject.transform.SetParent(null, false);
+            Vector3 value = gameObject.transform.localScale;
+            gameObject.transform.SetParent(parent, false);
 
-            gameObject.transform.SetParent(parent, true);
+            Features.Log.Info($"[SetWorldScale] Before: LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");
+            */
+            gameObject.transform.SetParent(null, false);
+            gameObject.transform.localScale = scale;
+            gameObject.transform.SetParent(parent, false);
+            /*
+            Features.Log.Info($"[SetWorldScale] After: LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");
+            */
         }
     }
 }

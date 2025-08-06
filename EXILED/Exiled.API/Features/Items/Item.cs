@@ -454,7 +454,7 @@ namespace Exiled.API.Features.Items
         {
             if (pickup is not null)
             {
-                Scale = pickup.GameObject.transform.localScale;
+                Scale = pickup.GameObject.GetWorldScale();
             }
         }
 
