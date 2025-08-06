@@ -30,9 +30,9 @@ namespace Exiled.API.Extensions
                 return gameObject.transform.localScale;
             }
 
-            gameObject.transform.SetParent(null, false);
+            gameObject.transform.SetParent(null, true);
             Vector3 value = gameObject.transform.localScale;
-            gameObject.transform.SetParent(parent, false);
+            gameObject.transform.SetParent(parent, true);
 
             /*Features.Log.Info($"[GetWorldScale:{new StackFrame(1).GetMethod().Name}] LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");*/
             return value;
@@ -55,15 +55,15 @@ namespace Exiled.API.Extensions
             }
 
             /*
-            gameObject.transform.SetParent(null, false);
+            gameObject.transform.SetParent(null, true);
             Vector3 value = gameObject.transform.localScale;
-            gameObject.transform.SetParent(parent, false);
+            gameObject.transform.SetParent(parent, true);
 
             Features.Log.Info($"[SetWorldScale] Before: LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");
             */
-            gameObject.transform.SetParent(null, false);
+            gameObject.transform.SetParent(null, true);
             gameObject.transform.localScale = scale;
-            gameObject.transform.SetParent(parent, false);
+            gameObject.transform.SetParent(parent, true);
             /*
             Features.Log.Info($"[SetWorldScale] After: LocalScale:{gameObject.transform.localScale} LossyScale:{gameObject.transform.lossyScale} GlobalScale:{value}");
             */
