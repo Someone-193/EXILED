@@ -156,7 +156,18 @@ namespace Exiled.Loader
                 if (ctor is null)
                     continue;
 
-                ValidateType(value, ctor.Invoke(null, null), property, ref validated);
+                object defaultInstance2;
+                try
+                {
+                    defaultInstance2 = ctor.Invoke(null, null);
+                }
+                catch (TargetException ex)
+                {
+                    Log.Error($"Failed to deep validate Type '{property.PropertyType.FullName}'!\n{ex}");
+                    continue;
+                }
+
+                ValidateType(value, defaultInstance2, property, ref validated);
             }
         }
 
