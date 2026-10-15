@@ -1311,6 +1311,11 @@ namespace Exiled.API.Features
         internal static ConditionalWeakTable<GameObject, Player> UnverifiedPlayers { get; } = new();
 
         /// <summary>
+        /// Gets or sets this player's <see cref="IgnoreFlags"/>.
+        /// </summary>
+        internal IgnoreFlags IgnoreFlags { get; set; }
+
+        /// <summary>
         /// Gets or sets a <see cref="CustomHealthStat"/>.
         /// </summary>
         protected HealthStat CustomHealthStat { get; set; }
@@ -2641,6 +2646,19 @@ namespace Exiled.API.Features
         /// <param name="wearableElements">The <see cref="WearableElements"/> flags to disable.</param>
         /// <seealso cref="EnableWearables"/>
         public void DisableWearables(WearableElementType wearableElements) => Wearables &= ~wearableElements;
+
+        /// <summary>
+        /// Sets the <see cref="IgnoreFlags"/> of this player.
+        /// </summary>
+        /// <param name="flags">The flags to set.</param>
+        /// <param name="value">The new value of the flags.</param>
+        public void SetIgnoreFlags(IgnoreFlags flags, bool value)
+        {
+            if (value)
+                IgnoreFlags |= flags;
+            else
+                IgnoreFlags &= ~flags;
+        }
 
         /// <summary>
         /// Adds the amount of a specified <see cref="AmmoType">ammo type</see> to the player's inventory.
